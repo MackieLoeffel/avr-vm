@@ -10,18 +10,24 @@ This VM was built as part of an university course, so it is not under current
 development. But if you want to use it and have a problem, feel free
 to open an issue or a PR.
 
-Since the original vm used some code from my professor, for which I
-don't have a license, the current version in this repository doesn't
-compile.
+Since the code for the GUI was supplied by the professor, the code
+is currently only working with the `no_gui` feature, see below.
+
+Some test programs can be found in `./test`. The VM is only tested to
+work with these programs. Only the instructions of these programs
+are currently implemented.
 
 ## Installation
 
 For using this VM you need to do the following steps:
+
 1.  clone this repository
+
 2.  This project uses [Dynasm-rs](https://github.com/CensoredUsername/dynasm-rs) for the JIT-compiler, which is a
     compiler plugin and needs the nightly Rust compiler. A working
     version can be installed using [Rustup](https://rustup.rs/):
     `rustup override set nightly-2017-02-13`
+
 3.  For running the tests and compiling C-Code and assembler to AVR
     bytecode, `gcc-avr` is needed. It can be installed either from
     <http://www.atmel.com/tools/ATMELAVRTOOLCHAINFORLINUX.aspx>
@@ -32,19 +38,21 @@ For using this VM you need to do the following steps:
 
 ## Usage
 
-You can exuecte the VM using the following command:
-`cargo run --release -- <path to the binary with avr code>`
+You can execute the VM using the following command:
+`cargo run --release -- ./test/jump/jump.bin`
 
 All bytes, which are written to `UDR` by the microcontroller, are
 displayed in the console.
 
+You can exucute a different binary by changing `./test/jump/jump.bin`.
+
 ### Without GUI
 
 The GUI can be disabled using
-`cargo run --release --features no_gui -- <path to the binary with avr code>`
+`cargo run --release --features no_gui -- ./test/jump/jump.bin`
 
 ### Without JIT
 
 The JIT-Compiler can be disabled with the following flags and the
 VM falls back to an emulating mode:
-`cargo run --release --features interpret -- <path to the binary with avr code>`
+`cargo run --release --features interpret -- ./test/jump/jump.bin`

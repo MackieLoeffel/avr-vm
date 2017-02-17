@@ -2,7 +2,6 @@
 #![feature(abi_sysv64)]
 #![plugin(dynasm)]
 
-#[macro_use]
 extern crate dynasmrt;
 extern crate libc;
 extern crate rand;
