@@ -15,7 +15,7 @@ is currently only working with the `no_gui` feature, see below.
 
 Some test programs can be found in `./test`. The VM is only tested to
 work with these programs. Only the instructions of these programs
-are currently implemented.
+are currently implemented (which are quite a few, but not all).
 
 ## Installation
 
@@ -56,3 +56,8 @@ The GUI can be disabled using
 The JIT-Compiler can be disabled with the following flags and the
 VM falls back to an emulating mode:
 `cargo run --release --features interpret -- ./test/jump/jump.bin`
+
+## Material
+
+-   [Instruction Set](http://www.atmel.com/images/Atmel-0856-AVR-Instruction-Set-Manual.pdf)
+-   [Hardware Description](http://www.atmel.com/images/doc2503.pdf)
