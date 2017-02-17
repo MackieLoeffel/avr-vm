@@ -1,0 +1,78 @@
+#+OPTIONS: \n:t, toc:nil
+#+AUTHOR:
+#+TITLE:VM
+
+* TODO before opensource
+** TODO Readme
+*** TODO übersetzen
+*** TODO anpassen
+** TODO travis einrichten
+** TODO C-Code rauswerfen
+*** TODO gui nachbauen
+*** TODO sig_std_logic ersetzen
+    sollte mit RefCells gehen
+** TODO aufräumen
+*** TODO doppelten Code in cpu.rs entfernen mit inline_always
+
+* Rust Installation
+  Die aktuelle Version der VM benötigt eine bestimmte Version des
+  Rust-Compilers, damit das dynasm Paket funktioniert. Um diese zu
+  bekommen, installiert man am besten Rust mittels Rustup
+  (https://rustup.rs/) und führt daraufhin
+
+  rustup override set nightly-2017-01-08
+
+  im Verzeichnis, in dem diese Datei liegt, aus.
+* Benötigte Packete
+  Unter Debian/Ubunutu können die benötigten Packages mit
+  sudo apt-get install gcc-avr gtk+2.0
+  installiert werden.
+* Ausführen
+  Die VM kann mittels
+  cargo run --release -- vm-atmega32/test/simple/simple.bin
+  im Hauptverzeichnis dieses Projektes ausgeführt werden.
+
+  Anstatt simple können mit anderen Pfaden auch die anderen Programme
+  ausgeführt werden.
+* Tests
+  Die Tests können mittels
+  cargo test
+  ausgeführt werden.
+* GUI abschalten
+  Ohne GUI ausführen:
+  cargo run --release --features no_gui -- vm-atmega32/test/jump/jump-time.bin
+* Interpretieren anstatt JIT kompilieren
+  cargo run --release --features interpret -- vm-atmega32/test/simple/simple.bin
+
+  Für Zeitmessungen des Interpreters:
+  cargo run --release --features "interpret no_gui" -- vm-atmega32/test/jump/jump-time.bin
+* Intern                                                           :noexport:
+** Toolchain
+   https://www.heise.de/ct/projekte/machmit/ctbot/wiki/AVRToolchain
+** Rust und C
+   https://bluishcoder.co.nz/2013/08/08/linking_and_calling_rust_functions_from_c.html
+   http://stackoverflow.com/questions/29444606/linking-rust-dylib-into-c-program
+   http://stackoverflow.com/questions/37929165/rust-and-c-linking-problems-with-minimal-program-and-no-std
+** Rust im CIP
+   - http://edunham.net/2015/11/17/installing_rust_without_root.html
+   - Downloadadresse ist: https://static.rust-lang.org/dist/rust-1.13.0-x86_64-unknown-linux-gnu.tar.gz
+   - im ciptmp entpacken, da ansonsten zu groß
+   - ./install.sh --prefix=...
+   - export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:~/<...>/lib"
+   - ~/.cargo ins ciptmp verschieben und symlinken, da sonst groß
+** sig_std_logic
+   - U: undefiniert, nicht alle Geräte haben was angelegt
+   - Z: unverbunden
+   - 0: auf 0 gezogen
+   - 1: auf 1 gezogen
+   - X: auf 0 und 1 gezogen
+   - L: schwache 0
+   - H: schwache 1
+   - W: schwache 0 & 1
+** DDR & PORT
+   Soll-Werte, die an den Pins angelegt werden sollen:
+   | DDR | PORT | OUT |
+   | 0   | 0    | Z   |
+   | 0   | 1    | H   |
+   | 1   | 0    | 0   |
+   | 1   | 1    | 1   |

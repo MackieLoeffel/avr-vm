@@ -1,0 +1,16 @@
+[package]
+name = "avr-vm"
+version = "0.1.0"
+authors = ["Mackie Loeffel <mackie.loeffel@web.de>"]
+
+[dependencies]
+rand = "0.3"
+lazy_static = "0.2"
+libc = "0.2"
+dynasm = { git = "https://github.com/CensoredUsername/dynasm-rs", branch = "dev" }
+dynasmrt = "0.0.6"
+
+[features]
+default = []
+no_gui = []
+interpret = []
