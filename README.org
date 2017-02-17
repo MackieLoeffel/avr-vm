@@ -2,50 +2,64 @@
 #+AUTHOR:
 #+TITLE:VM
 
-* TODO before opensource
+* TODO before opensource                                           :noexport:
 ** TODO Readme
-*** TODO übersetzen
+*** DONE übersetzen
 *** TODO anpassen
 ** TODO travis einrichten
 ** TODO C-Code rauswerfen
 *** TODO gui nachbauen
+*** TODO nogui ohne deps
 *** TODO sig_std_logic ersetzen
     sollte mit RefCells gehen
 ** TODO aufräumen
 *** TODO doppelten Code in cpu.rs entfernen mit inline_always
+*** TODO dynasm nur verwenden, wenn mit jit kompiliert wird?
 
-* Rust Installation
-  Die aktuelle Version der VM benötigt eine bestimmte Version des
-  Rust-Compilers, damit das dynasm Paket funktioniert. Um diese zu
-  bekommen, installiert man am besten Rust mittels Rustup
-  (https://rustup.rs/) und führt daraufhin
+* AVR-VM
+  This is a VM for the AVR ATmega32 microcontroller written in Rust.
+  It can handle most of the instructions and has support for I/O, ADC,
+  timer and button interrupts. It also features a JIT compiler, which
+  compiles the AVR bytecode to x64 machinecode at runtime. It is quite
+  fast, about 5x faster than the real microcontroller.
 
-  rustup override set nightly-2017-01-08
+  This VM was built as part of an university course, so it is not under current
+  development. But if you want to use it and have a problem, feel free
+  to open an issue or a PR.
 
-  im Verzeichnis, in dem diese Datei liegt, aus.
-* Benötigte Packete
-  Unter Debian/Ubunutu können die benötigten Packages mit
-  sudo apt-get install gcc-avr gtk+2.0
-  installiert werden.
-* Ausführen
-  Die VM kann mittels
-  cargo run --release -- vm-atmega32/test/simple/simple.bin
-  im Hauptverzeichnis dieses Projektes ausgeführt werden.
+  Since the original vm used some code from my professor, for which I
+  don't have a license, the current version in this repository doesn't
+  compile.
 
-  Anstatt simple können mit anderen Pfaden auch die anderen Programme
-  ausgeführt werden.
-* Tests
-  Die Tests können mittels
-  cargo test
-  ausgeführt werden.
-* GUI abschalten
-  Ohne GUI ausführen:
-  cargo run --release --features no_gui -- vm-atmega32/test/jump/jump-time.bin
-* Interpretieren anstatt JIT kompilieren
-  cargo run --release --features interpret -- vm-atmega32/test/simple/simple.bin
+** Installation
+   For using this VM you need to do the following steps:
+   1. clone this repository
+   2. This project uses [[https://github.com/CensoredUsername/dynasm-rs][Dynasm-rs]] for the JIT-compiler, which is a
+      compiler plugin and needs the nightly Rust compiler. A working
+      version can be installed using [[https://rustup.rs/][Rustup]]:
+      ~rustup override set nightly-2017-02-13~
+   3. For running the tests and compiling C-Code and assembler to AVR
+      bytecode, ~gcc-avr~ is needed. It can be installed either from
+      [[http://www.atmel.com/tools/ATMELAVRTOOLCHAINFORLINUX.aspx]]
+      or on Ubuntu/Debian/BashOnWindows using
+      ~sudo apt-get install gcc-avr~
+      If you are using a different distribution, you can probably find
+      an equivalent package there.
 
-  Für Zeitmessungen des Interpreters:
-  cargo run --release --features "interpret no_gui" -- vm-atmega32/test/jump/jump-time.bin
+** Usage
+   You can exuecte the VM using the following command:
+   ~cargo run --release -- <path to the binary with avr code>~
+
+   All bytes, which are written to ~UDR~ by the microcontroller, are
+   displayed in the console.
+*** Without GUI
+    The GUI can be disabled using
+    ~cargo run --release --features no_gui -- <path to the binary with avr code>~
+*** Without JIT
+    The JIT-Compiler can be disabled with the following flags and the
+    VM falls back to an emulating mode:
+    ~cargo run --release --features interpret -- <path to the binary with avr code>~
+
 * Intern                                                           :noexport:
 ** Toolchain
    https://www.heise.de/ct/projekte/machmit/ctbot/wiki/AVRToolchain
