@@ -21,7 +21,6 @@ For using this VM you need to do the following steps:
 2.  This project uses [Dynasm-rs](https://github.com/CensoredUsername/dynasm-rs) for the JIT-compiler, which is a
     compiler plugin and needs the nightly Rust compiler. A working
     version can be installed using [Rustup](https://rustup.rs/):
-
     `rustup override set nightly-2017-02-13`
 3.  For running the tests and compiling C-Code and assembler to AVR
     bytecode, `gcc-avr` is needed. It can be installed either from
