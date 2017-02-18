@@ -5,6 +5,11 @@ rust:
   # - beta
   - nightly-2017-02-13
 cache: cargo
+sudo: required
+before_install:
+  - sudo apt-get update -qq
+install:
+  - sudo apt-get install -qq gcc-avr binutils-avr avr-libc
 # before_script:
   # - (cargo install rustfmt || true)
   # - bash -c 'if [[ "$TRAVIS_RUST_VERSION" == "nightly" ]]; then
