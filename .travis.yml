@@ -5,7 +5,7 @@ rust:
   # - beta
   - nightly-2017-02-13
 cache: cargo
-sudo: required
+# sudo: required
 before_install:
   - sudo apt-get update -qq
 install:
