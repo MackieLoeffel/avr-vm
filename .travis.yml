@@ -3,7 +3,7 @@ language: rust
 rust:
   # - stable
   # - beta
-  - nightly
+  - nightly-2017-02-13
 cache: cargo
 # before_script:
   # - (cargo install rustfmt || true)
