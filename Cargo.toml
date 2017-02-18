@@ -14,3 +14,4 @@ dynasmrt = "0.0.6"
 default = []
 no_gui = []
 interpret = []
+strict = []

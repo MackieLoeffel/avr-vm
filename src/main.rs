@@ -1,6 +1,7 @@
 #![feature(plugin)]
 #![feature(abi_sysv64)]
 #![plugin(dynasm)]
+#![cfg_attr(feature = "strict", deny(warnings))]
 
 extern crate dynasmrt;
 extern crate libc;
