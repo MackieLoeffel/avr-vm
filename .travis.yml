@@ -13,9 +13,9 @@ cache: cargo
 script:
   - export PATH=$PATH:~/.cargo/bin
   # - cargo fmt -- --write-mode=diff
-  - cargo build --features strict && cargo test --features strict
+  # - cargo build --features strict && cargo test --features strict
   - cargo build --features "strict no_gui" && cargo test --features "strict no_gui"
-  - cargo build --features "strict interpret" && cargo test --features "strict interpret"
+  # - cargo build --features "strict interpret" && cargo test --features "strict interpret"
   # - bash -c 'if [[ "$TRAVIS_RUST_VERSION" == "nightly" ]]; then
       # cargo clippy -- -D warnings;
     # fi'

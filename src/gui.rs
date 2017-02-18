@@ -1,4 +1,4 @@
-static mut RUNNING: bool = true;
+// static mut RUNNING: bool = true;
 
 // extern "C" fn deleted_callback() {
     // unsafe { RUNNING = false; }

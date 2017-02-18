@@ -14,7 +14,7 @@ pub struct Widget<'a> {
 }
 
 impl<'a> Widget<'a> {
-    pub fn new(name: &str, typ: WidgetType<'a>) -> Widget<'a> {
+    pub fn new(_name: &str, typ: WidgetType<'a>) -> Widget<'a> {
         // let cname = CString::new(name).expect("expected correct string");
         // let cdata = match typ {
             // WidgetType::Led(r, g, b, port_a, port_c) => unsafe {

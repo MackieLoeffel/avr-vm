@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
-PROGRAM="jump"
-PROGRAMDIR=
+PROGRAM="jump-time"
+PROGRAMDIR="jump"
 # set default value
 : ${PROGRAMDIR:=$PROGRAM}
 
