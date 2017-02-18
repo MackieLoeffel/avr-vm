@@ -6,7 +6,7 @@
 ** TODO Readme
 *** DONE übersetzen
 *** TODO anpassen
-** TODO travis einrichten
+** DONE travis einrichten
 ** TODO C-Code rauswerfen
 *** TODO gui nachbauen
 *** TODO nogui ohne deps
