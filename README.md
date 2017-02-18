@@ -1,5 +1,6 @@
 # AVR-VM
 
+[<https://travis-ci.org/MackieLoeffel/avr-vm.svg?branch=master>](https://travis-ci.org/MackieLoeffel/avr-vm)
 This is a VM for the AVR ATmega32 microcontroller written in Rust.
 It can handle most of the instructions and has support for I/O, ADC,
 timer and button interrupts. It also features a JIT compiler, which
