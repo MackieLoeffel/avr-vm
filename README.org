@@ -30,9 +30,6 @@
   development. But if you want to use it and have a problem, feel free
   to open an issue or a PR.
 
-  Since the code for the GUI was supplied by the professor, the code
-  is currently only working with the ~no_gui~ feature, see below.
-
   Some test programs can be found in ~./test~. The VM is only tested to
   work with these programs. Only the instructions of these programs
   are currently implemented (which are quite a few, but not all).
@@ -40,9 +37,12 @@
 ** Installation
    For using this VM you need to do the following steps:
 
-   1. clone this repository
+   1. Clone this repository.
 
-   2. *ONLY FOR JIT-COMPILATION:*
+   2. If you want to use the GUI, you need to have at least gtk 3.4
+      installed.
+
+   3. *ONLY FOR JIT-COMPILATION:*
       This project uses [[https://github.com/CensoredUsername/dynasm-rs][Dynasm-rs]] for the JIT-compiler, which is a
       compiler plugin and needs the nightly Rust compiler. A working
       version can be installed using [[https://rustup.rs/][Rustup]]:
@@ -50,7 +50,7 @@
       Furthermore the JIT-Compiler needs to be enabled using the feature "jit",
       see below.
 
-   3. For running the tests and compiling C-Code and assembler to AVR
+   4. For running the tests and compiling C-Code and assembler to AVR
       bytecode, ~gcc-avr~ is needed. It can be installed either from
       [[http://www.atmel.com/tools/ATMELAVRTOOLCHAINFORLINUX.aspx]]
       or on Ubuntu/Debian/BashOnWindows using
@@ -60,15 +60,20 @@
 
 ** Usage
    You can execute the VM using the following command:
-   ~cargo run --release -- ./test/jump/jump.bin~
+   ~cargo run --release -- ./test/boardtest/boardtest.bin~
 
    All bytes, which are written to ~UDR~ by the microcontroller, are
    displayed in the console.
 
-   You can exucute a different binary by changing ~./test/jump/jump.bin~.
+   You can exucute a different binary by changing ~./test/boardtest/boardtest.bin~.
 *** Without GUI
     The GUI can be disabled using
-    ~cargo run --release --features no_gui -- ./test/jump/jump.bin~
+    ~cargo run --release --no-default-features -- ./test/jump/jump.bin~
+
+    Only the output on the console is visible then and the program
+    stops on the first NOP. This is useful for benchmarking the
+    compiler, see ~./tests/jump/jump-time~ for an example program used
+    for benchmarking.
 *** Use the JIT compiler
     The JIT-Compiler can be enabled with the following flags:
     ~cargo run --release --features jit -- ./test/jump/jump.bin~
