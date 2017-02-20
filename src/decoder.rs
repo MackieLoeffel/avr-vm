@@ -262,14 +262,12 @@ impl<T: Iterator<Item=u8>> DecodedIterator<T> {
     }
 }
 
-#[cfg(test_off)]
-// #[cfg(test)]
+// #[cfg(test_off)]
+#[cfg(test)]
 mod tests {
     use super::*;
     use util::assemble;
     use data::{Instruction, LDMode, LDType, LPMType, X, Y, Z};
-    use data::Instruction::*;
-    use data::SetClear::*;
 
     #[test]
     fn add() {

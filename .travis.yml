@@ -20,8 +20,8 @@ script:
   - cargo build --features strict && cargo test --features strict
   - cargo build --features "strict no_gui" && cargo test --features "strict no_gui"
   - bash -c 'if [[ "$TRAVIS_RUST_VERSION" == "nightly-2017-02-13" ]]; then
-       cargo build --features "strict jit" && cargo test --features "strict jit"
+       cargo build --features "strict jit" && cargo test --features "strict jit";
     fi'
   - bash -c 'if [[ "$TRAVIS_RUST_VERSION" == "nightly-2017-02-13" ]]; then
-       cargo build --features "strict no_gui jit" && cargo test --features "strict no_gui jit"
+       cargo build --features "strict no_gui jit" && cargo test --features "strict no_gui jit";
     fi'
