@@ -6,12 +6,12 @@ authors = ["Mackie Loeffel <mackie.loeffel@web.de>"]
 [dependencies]
 rand = "0.3"
 lazy_static = "0.2"
-libc = "0.2"
-dynasm = { git = "https://github.com/CensoredUsername/dynasm-rs", branch = "dev" }
-dynasmrt = "0.0.6"
+dynasm = { git = "https://github.com/CensoredUsername/dynasm-rs", branch = "dev", optional = true }
+dynasmrt = {version = "0.0.6", optional = true}
 
 [features]
 default = []
 no_gui = []
-interpret = []
+jit = ["dynasm", "dynasmrt"]
+# only for ci
 strict = []

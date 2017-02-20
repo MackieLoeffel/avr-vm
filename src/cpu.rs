@@ -1,14 +1,21 @@
 use data;
-use data::{Instruction, LDType, LDMode, LPMType, Register, SREG};
+use data::{Instruction, LDType, LDMode, LPMType};
 use data::Instruction::*;
 use memory::{Memory};
 use interrupts::{PortInterrupts, TimerInterrupts};
 use util::{bit, bit16, bitneg, bitneg16};
+#[cfg(feature = "jit")]
 use std::collections::HashMap;
+#[cfg(feature = "jit")]
 use std::{mem};
+#[cfg(feature = "jit")]
+use data::{Register, SREG};
 
+#[cfg(feature = "jit")]
 use dynasmrt;
+#[cfg(feature = "jit")]
 use dynasmrt::{ExecutableBuffer, AssemblyOffset};
+#[cfg(feature = "jit")]
 use dynasmrt::DynasmApi;
 
 const I: usize = 7;
@@ -34,15 +41,23 @@ pub struct Cpu<'a> {
     timer_int: TimerInterrupts,
     // we can't just save the function pointer, because then we would free
     // the buffer and segfault, when we try to execute the function
+    #[cfg(feature = "jit")]
     blocks: HashMap<usize, (ExecutableBuffer, AssemblyOffset)>
 }
 
 impl<'a> Cpu<'a> {
     pub fn new(mem: Memory, halt_on_nop: bool) -> Cpu {
-        Cpu { ip: 0, mem: mem, steps: 0,
+        #[cfg(not(feature = "jit"))]
+        {Cpu { ip: 0, mem: mem, steps: 0,
               halt_on_nop: halt_on_nop, sleeping: false, should_halt: false,
               port_int: PortInterrupts::new(), timer_int: TimerInterrupts::new(),
-              blocks: HashMap::new() }
+        }}
+        #[cfg(feature = "jit")]
+        {Cpu { ip: 0, mem: mem, steps: 0,
+              halt_on_nop: halt_on_nop, sleeping: false, should_halt: false,
+              port_int: PortInterrupts::new(), timer_int: TimerInterrupts::new(),
+              blocks: HashMap::new()
+        }}
     }
 
     pub fn step(&mut self) -> bool {
@@ -72,13 +87,13 @@ impl<'a> Cpu<'a> {
 
         if !self.sleeping {
 
-            #[cfg(feature = "interpret")]
+            #[cfg(not(feature = "jit"))]
             {
                 let instr = self.mem.get_instruction(self.ip);
                 self.handle_instruction(instr);
             }
 
-            #[cfg(not(feature = "interpret"))]
+            #[cfg(feature = "jit")]
             {
                 let func: extern "sysv64" fn(*mut Cpu);
                 {
@@ -107,6 +122,7 @@ impl<'a> Cpu<'a> {
         })
     }
 
+    #[cfg(feature = "jit")]
     #[inline(always)]
     fn compile_block(mem: &Memory, addr: usize) -> (ExecutableBuffer, AssemblyOffset) {
         #[cfg(debug_assertions)]
@@ -235,6 +251,7 @@ impl<'a> Cpu<'a> {
     }
 
     #[inline(always)]
+    #[cfg(feature = "jit")]
     fn is_end_of_block(instr: Instruction) -> bool {
         // we can't enable interrupts directly after sti but need to enable them one step later
         // the delay is needed e.g. for a sti sleep sequence, where we must not miss
@@ -251,7 +268,7 @@ impl<'a> Cpu<'a> {
 
 
     #[inline(always)]
-    #[cfg_attr(not(feature = "interpret"), allow(dead_code))]
+    #[cfg(not(feature = "jit"))]
     fn handle_instruction(&mut self, instr: Instruction) {
         #[cfg(debug_assertions)]
         println!("Executing: {:?}", instr);
@@ -800,6 +817,7 @@ impl<'a> Cpu<'a> {
     }
 }
 
+#[cfg(feature = "jit")]
 extern "sysv64" fn add(c: *mut Cpu, rd: Register, rr: Register) {
     let cpu = unsafe {&mut *c};
     let rdv = cpu.reg(rd);
@@ -819,6 +837,7 @@ extern "sysv64" fn add(c: *mut Cpu, rd: Register, rr: Register) {
     cpu.ip += 1;
 }
 
+#[cfg(feature = "jit")]
 extern "sysv64" fn adc(c: *mut Cpu, rd: Register, rr: Register) {
     let cpu = unsafe {&mut *c};
     let rdv = cpu.reg(rd);
@@ -839,6 +858,7 @@ extern "sysv64" fn adc(c: *mut Cpu, rd: Register, rr: Register) {
     cpu.ip += 1;
 }
 
+#[cfg(feature = "jit")]
 extern "sysv64" fn adiw(c: *mut Cpu, reg: Register, k: u8) {
     let cpu = unsafe {&mut *c};
     let rdv = cpu.get_word_reg(reg);
@@ -852,6 +872,7 @@ extern "sysv64" fn adiw(c: *mut Cpu, reg: Register, k: u8) {
     cpu.ip += 1;
 }
 
+#[cfg(feature = "jit")]
 extern "sysv64" fn and(c: *mut Cpu, rd: Register, rr: Register) {
     let cpu = unsafe {&mut *c};
     let res = cpu.reg(rd) & cpu.reg(rr);
@@ -863,6 +884,7 @@ extern "sysv64" fn and(c: *mut Cpu, rd: Register, rr: Register) {
     cpu.ip += 1;
 }
 
+#[cfg(feature = "jit")]
 extern "sysv64" fn andi(c: *mut Cpu, rd: Register, k: u8) {
     let cpu = unsafe {&mut *c};
     let res = cpu.reg(rd) & k;
@@ -873,6 +895,7 @@ extern "sysv64" fn andi(c: *mut Cpu, rd: Register, k: u8) {
 
     cpu.ip += 1;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn asr(c: *mut Cpu, reg: Register) {
     let cpu = unsafe {&mut *c};
     let rdv = cpu.reg(reg);
@@ -883,12 +906,14 @@ extern "sysv64" fn asr(c: *mut Cpu, reg: Register) {
                    Some(bit(rdv, 0)));
     cpu.ip += 1;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn bclr(c: *mut Cpu, s: SREG) {
     let cpu = unsafe {&mut *c};
     let flags = cpu.flags();
     cpu.mem.set_flags(flags & !(1 << s));
     cpu.ip += 1;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn bld(c: *mut Cpu, reg: Register, b: u8) {
     let cpu = unsafe {&mut *c};
     let rdv = cpu.reg(reg);
@@ -896,18 +921,21 @@ extern "sysv64" fn bld(c: *mut Cpu, reg: Register, b: u8) {
     *cpu.reg_mut(reg) = rdv & !(1 << b) | (t << b);
     cpu.ip += 1;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn bst(c: *mut Cpu, reg: Register, b: u8) {
     let cpu = unsafe {&mut *c};
     let rdv = cpu.reg(reg);
     cpu.set_flags(None, Some(bit(rdv, b as usize)), None, None, None, None, None);
     cpu.ip += 1;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn bset(c: *mut Cpu, s: SREG) {
     let cpu = unsafe {&mut *c};
     let flags = cpu.flags();
     cpu.mem.set_flags(flags | (1 << s));
     cpu.ip += 1;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn brbc_s(c: *mut Cpu, setclear: u8, sreg: SREG, rel: i8) {
     let cpu = unsafe {&mut *c};
     if bit(cpu.flags(), sreg as usize) == setclear {
@@ -916,6 +944,7 @@ extern "sysv64" fn brbc_s(c: *mut Cpu, setclear: u8, sreg: SREG, rel: i8) {
         cpu.ip += 1;
     }
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn call(c: *mut Cpu, ip: u32) {
     let cpu = unsafe {&mut *c};
     let retip = (cpu.ip + 2) as u16;
@@ -923,6 +952,7 @@ extern "sysv64" fn call(c: *mut Cpu, ip: u32) {
 
     cpu.ip = ip as usize;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn com(c: *mut Cpu, reg: Register) {
     let cpu = unsafe {&mut *c};
     let res = !cpu.reg(reg);
@@ -930,6 +960,7 @@ extern "sysv64" fn com(c: *mut Cpu, reg: Register) {
     cpu.set_flags(None, None, None, Some(0), Some(bit(res, 7)), Some((res == 0) as u8), Some(1));
     cpu.ip += 1;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn cp(c: *mut Cpu, rd: Register, rr: Register) {
     let cpu = unsafe {&mut *c};
     let rdv = cpu.reg(rd);
@@ -950,6 +981,7 @@ extern "sysv64" fn cp(c: *mut Cpu, rd: Register, rr: Register) {
 
     cpu.ip += 1;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn cpc(c: *mut Cpu, rd: Register, rr: Register) {
     let cpu = unsafe {&mut *c};
     let rdv = cpu.reg(rd);
@@ -971,6 +1003,7 @@ extern "sysv64" fn cpc(c: *mut Cpu, rd: Register, rr: Register) {
 
     cpu.ip += 1;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn cpi(c: *mut Cpu, reg: Register, k: u8) {
     let cpu = unsafe {&mut *c};
     let rv = cpu.reg(reg);
@@ -988,6 +1021,7 @@ extern "sysv64" fn cpi(c: *mut Cpu, reg: Register, k: u8) {
 
     cpu.ip += 1;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn cpse(c: *mut Cpu, rd: Register, rr: Register) {
     let cpu = unsafe {&mut *c};
     if cpu.reg(rd) == cpu.reg(rr) {
@@ -999,12 +1033,14 @@ extern "sysv64" fn cpse(c: *mut Cpu, rd: Register, rr: Register) {
         cpu.ip += 1;
     }
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn c_sbi(c: *mut Cpu, typ: u8, ioreg: u8, b: u8) {
     let cpu = unsafe {&mut *c};
     let val = cpu.mem.io_reg(ioreg);
     cpu.mem.set_io_reg(ioreg, (val & !(1 << b)) | (typ << b));
     cpu.ip += 1;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn dec(c: *mut Cpu, reg: Register) {
     let cpu = unsafe {&mut *c};
     let res = cpu.reg(reg).wrapping_sub(1);
@@ -1013,6 +1049,7 @@ extern "sysv64" fn dec(c: *mut Cpu, reg: Register) {
                    Some(bit(res, 7)), Some((res == 0) as u8), None);
     cpu.ip += 1;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn eor(c: *mut Cpu, rd: Register, rr: Register) {
     let cpu = unsafe {&mut *c};
     let res = cpu.reg(rd) ^ cpu.reg(rr);
@@ -1021,6 +1058,7 @@ extern "sysv64" fn eor(c: *mut Cpu, rd: Register, rr: Register) {
                    Some((res == 0) as u8), None);
     cpu.ip += 1;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn icall(c: *mut Cpu) {
     let cpu = unsafe {&mut *c};
     let retip = (cpu.ip + 1) as u16;
@@ -1029,15 +1067,18 @@ extern "sysv64" fn icall(c: *mut Cpu) {
     let ip = cpu.get_word_reg(data::Z);
     cpu.ip = ip as usize;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn in_(c: *mut Cpu, reg: Register, index: u8) {
     let cpu = unsafe {&mut *c};
     *cpu.reg_mut(reg) = cpu.mem.io_reg(index);
     cpu.ip += 1;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn jmp(c: *mut Cpu, ip: u32) {
     let cpu = unsafe {&mut *c};
     cpu.ip = ip as usize;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn ld_st(c: *mut Cpu, typ: u8, reg: Register, addrreg: Register, mode_u16: u16) {
     let cpu = unsafe {&mut *c};
     let mode = LDMode::from_u16(mode_u16);
@@ -1071,23 +1112,27 @@ extern "sysv64" fn ld_st(c: *mut Cpu, typ: u8, reg: Register, addrreg: Register,
     };
     cpu.ip += 1;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn lds(c: *mut Cpu, reg: Register, k: u16) {
     let cpu = unsafe {&mut *c};
     let val = cpu.mem.data(k);
     *cpu.reg_mut(reg) = val;
     cpu.ip += 2;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn sts(c: *mut Cpu, reg: Register, k: u16) {
     let cpu = unsafe {&mut *c};
     let val = cpu.reg(reg);
     cpu.mem.set_data(k, val);
     cpu.ip += 2;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn ldi(c: *mut Cpu, reg: Register, val: u8) {
     let cpu = unsafe {&mut *c};
     *cpu.reg_mut(reg) = val;
     cpu.ip += 1;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn lpm(c: *mut Cpu, reg: Register, typ: u8) {
     let cpu = unsafe {&mut *c};
     let z = cpu.get_word_reg(data::Z);
@@ -1100,6 +1145,7 @@ extern "sysv64" fn lpm(c: *mut Cpu, reg: Register, typ: u8) {
 
     cpu.ip += 1;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn lsr(c: *mut Cpu, reg: Register) {
     let cpu = unsafe {&mut *c};
     let rdv = cpu.reg(reg);
@@ -1110,17 +1156,20 @@ extern "sysv64" fn lsr(c: *mut Cpu, reg: Register) {
                    Some(bit(rdv, 0)));
     cpu.ip += 1;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn mov(c: *mut Cpu, rd: Register, rr: Register) {
     let cpu = unsafe {&mut *c};
     *cpu.reg_mut(rd) = cpu.reg(rr);
     cpu.ip += 1;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn movw(c: *mut Cpu, rd: Register, rr: Register) {
     let cpu = unsafe {&mut *c};
     let val = cpu.get_word_reg(rr);
     cpu.set_word_reg(rd, val);
     cpu.ip += 1;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn mul(c: *mut Cpu, rd: Register, rr: Register) {
     let cpu = unsafe {&mut *c};
     let res = (cpu.reg(rd) as u16) * (cpu.reg(rr) as u16);
@@ -1128,6 +1177,7 @@ extern "sysv64" fn mul(c: *mut Cpu, rd: Register, rr: Register) {
     cpu.set_flags(None, None, None, None, None, Some((res == 0) as u8), Some(bit16(res, 15)));
     cpu.ip += 1;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn neg(c: *mut Cpu, rd: Register) {
     let cpu = unsafe {&mut *c};
     let rdv = cpu.reg(rd);
@@ -1140,6 +1190,7 @@ extern "sysv64" fn neg(c: *mut Cpu, rd: Register) {
                    Some((res != 0) as u8));
     cpu.ip += 1;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn nop(c: *mut Cpu) {
     let cpu = unsafe {&mut *c};
     if cpu.halt_on_nop {
@@ -1148,6 +1199,7 @@ extern "sysv64" fn nop(c: *mut Cpu) {
 
     cpu.ip += 1;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn or(c: *mut Cpu, rd: Register, rv: Register) {
     let cpu = unsafe {&mut *c};
     let res = cpu.reg(rd) | cpu.reg(rv);
@@ -1155,6 +1207,7 @@ extern "sysv64" fn or(c: *mut Cpu, rd: Register, rv: Register) {
     cpu.set_flags(None, None, None, Some(0), Some(bit(res, 7)), Some((res == 0) as u8), None);
     cpu.ip += 1;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn ori(c: *mut Cpu, rd: Register, k: u8) {
     let cpu = unsafe {&mut *c};
     let res = cpu.reg(rd) | k;
@@ -1162,12 +1215,14 @@ extern "sysv64" fn ori(c: *mut Cpu, rd: Register, k: u8) {
     cpu.set_flags(None, None, None, Some(0), Some(bit(res, 7)), Some((res == 0) as u8), None);
     cpu.ip += 1;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn out(c: *mut Cpu, reg: Register, index: u8) {
     let cpu = unsafe {&mut *c};
     let val = cpu.reg(reg);
     cpu.mem.set_io_reg(index, val);
     cpu.ip += 1;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn pop(c: *mut Cpu, reg: Register) {
     let cpu = unsafe {&mut *c};
     let val = cpu.mem.pop();
@@ -1175,6 +1230,7 @@ extern "sysv64" fn pop(c: *mut Cpu, reg: Register) {
 
     cpu.ip += 1;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn push(c: *mut Cpu, reg: Register) {
     let cpu = unsafe {&mut *c};
     let val = cpu.reg(reg);
@@ -1182,6 +1238,7 @@ extern "sysv64" fn push(c: *mut Cpu, reg: Register) {
 
     cpu.ip += 1;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn rcall(c: *mut Cpu, diff: i16) {
     let cpu = unsafe {&mut *c};
     let retip = (cpu.ip + 1) as u16;
@@ -1189,19 +1246,23 @@ extern "sysv64" fn rcall(c: *mut Cpu, diff: i16) {
 
     cpu.ip = (cpu.ip as i32 + diff as i32) as usize;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn ret(c: *mut Cpu) {
     let cpu = unsafe {&mut *c};
     cpu.ip = cpu.mem.pop16() as usize;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn reti(c: *mut Cpu) {
     let cpu = unsafe {&mut *c};
     cpu.set_flags(Some(1), None, None, None, None, None, None);
     cpu.ip = cpu.mem.pop16() as usize;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn rjmp(c: *mut Cpu, diff: i16) {
     let cpu = unsafe {&mut *c};
     cpu.ip = (cpu.ip as i32 + diff as i32) as usize;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn ror(c: *mut Cpu, reg: Register) {
     let cpu = unsafe {&mut *c};
     let rdv = cpu.reg(reg);
@@ -1212,6 +1273,7 @@ extern "sysv64" fn ror(c: *mut Cpu, reg: Register) {
                    Some(bit(rdv, 0)));
     cpu.ip += 1;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn sbci(c: *mut Cpu, reg: Register, val: u8) {
     let cpu = unsafe {&mut *c};
     let rdv = cpu.reg(reg);
@@ -1234,6 +1296,7 @@ extern "sysv64" fn sbci(c: *mut Cpu, reg: Register, val: u8) {
 
     cpu.ip += 1;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn sbc(c: *mut Cpu, rd: Register, rr: Register) {
     let cpu = unsafe {&mut *c};
     let rdv = cpu.reg(rd);
@@ -1256,6 +1319,7 @@ extern "sysv64" fn sbc(c: *mut Cpu, rd: Register, rr: Register) {
 
     cpu.ip += 1;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn sbiw(c: *mut Cpu, reg: Register, k: u8) {
     let cpu = unsafe {&mut *c};
     let rdv = cpu.get_word_reg(reg);
@@ -1268,6 +1332,7 @@ extern "sysv64" fn sbiw(c: *mut Cpu, reg: Register, k: u8) {
                    Some(bitneg16(rdv, 15) & bit16(res, 15)));
     cpu.ip += 1;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn sbic_s(c: *mut Cpu, setclear: u8, reg: Register, b: u8) {
     let cpu = unsafe {&mut *c};
     if bit(cpu.mem.io_reg(reg), b as usize) == setclear {
@@ -1279,6 +1344,7 @@ extern "sysv64" fn sbic_s(c: *mut Cpu, setclear: u8, reg: Register, b: u8) {
         cpu.ip += 1;
     }
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn sbr(c: *mut Cpu, setclear: u8, reg: Register, b: u8) {
     // TODO really doing the right thing or copy paste mistake
     let cpu = unsafe {&mut *c};
@@ -1291,11 +1357,13 @@ extern "sysv64" fn sbr(c: *mut Cpu, setclear: u8, reg: Register, b: u8) {
         cpu.ip += 1;
     }
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn sleep(c: *mut Cpu) {
     let cpu = unsafe {&mut *c};
     cpu.sleeping = true;
     cpu.ip += 1;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn sub(c: *mut Cpu, rd: Register, rr: Register) {
     let cpu = unsafe {&mut *c};
     let rdv = cpu.reg(rd);
@@ -1316,6 +1384,7 @@ extern "sysv64" fn sub(c: *mut Cpu, rd: Register, rr: Register) {
 
     cpu.ip += 1;
 }
+#[cfg(feature = "jit")]
 extern "sysv64" fn subi(c: *mut Cpu, reg: Register, val: u8) {
     let cpu = unsafe {&mut *c};
     let rdv = cpu.reg(reg);

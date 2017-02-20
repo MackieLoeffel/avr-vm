@@ -1,10 +1,10 @@
-#![feature(plugin)]
-#![feature(abi_sysv64)]
-#![plugin(dynasm)]
+#![cfg_attr(feature = "jit", feature(plugin))]
+#![cfg_attr(feature = "jit", feature(abi_sysv64))]
+#![cfg_attr(feature = "jit", plugin(dynasm))]
 #![cfg_attr(feature = "strict", deny(warnings))]
 
+#[cfg(feature = "jit")]
 extern crate dynasmrt;
-extern crate libc;
 extern crate rand;
 
 use std::env::args;

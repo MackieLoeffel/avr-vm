@@ -86,6 +86,7 @@ pub enum LDMode {
 
 impl LDMode {
     #[inline(always)]
+    #[allow(dead_code)]
     pub fn as_u16(&self) -> u16 {
         match *self {
             LDMode::PostIncrement => 0,
@@ -95,6 +96,7 @@ impl LDMode {
     }
 
     #[inline(always)]
+    #[allow(dead_code)]
     pub fn from_u16(val: u16) -> LDMode {
         if val == 0 {
             LDMode::PostIncrement
@@ -113,6 +115,7 @@ pub enum LDType {
 
 impl LDType {
     #[inline(always)]
+    #[allow(dead_code)]
     pub fn as_u8(&self) -> u8 {
         match *self {
             LDType::LD => 0,
@@ -121,6 +124,7 @@ impl LDType {
     }
 
     #[inline(always)]
+    #[allow(dead_code)]
     pub fn from_u8(val: u8) -> LDType {
         match val {
             0 => LDType::LD,
@@ -138,6 +142,7 @@ pub enum LPMType {
 
 impl LPMType {
     #[inline(always)]
+    #[allow(dead_code)]
     pub fn as_u8(&self) -> u8 {
         match *self {
             LPMType::Z => 0,
@@ -146,6 +151,7 @@ impl LPMType {
     }
 
     #[inline(always)]
+    #[allow(dead_code)]
     pub fn from_u8(val: u8) -> LPMType {
         match val {
             0 => LPMType::Z,
@@ -169,22 +175,3 @@ impl SetClear {
         }
     }
 }
-
-// errors
-/*#[derive(Debug)]
-pub enum VMError {
-}
-
-impl error::Error for VMError {
-    fn description(&self) -> &str { "VM-Error" }
-}
-
-impl fmt::Display for VMError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match *self {
-        }
-    }
-}
-
-pub type Result<T> = result::Result<T, VMError>;
-*/

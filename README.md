@@ -24,10 +24,13 @@ For using this VM you need to do the following steps:
 
 1.  clone this repository
 
-2.  This project uses [Dynasm-rs](https://github.com/CensoredUsername/dynasm-rs) for the JIT-compiler, which is a
+2.  **ONLY FOR JIT-COMPILATION:**
+    This project uses [Dynasm-rs](https://github.com/CensoredUsername/dynasm-rs) for the JIT-compiler, which is a
     compiler plugin and needs the nightly Rust compiler. A working
     version can be installed using [Rustup](https://rustup.rs/):
     `rustup override set nightly-2017-02-13`
+    Furthermore the JIT-Compiler needs to be enabled using the feature "jit",
+    see below.
 
 3.  For running the tests and compiling C-Code and assembler to AVR
     bytecode, `gcc-avr` is needed. It can be installed either from
@@ -52,11 +55,14 @@ You can exucute a different binary by changing `./test/jump/jump.bin`.
 The GUI can be disabled using
 `cargo run --release --features no_gui -- ./test/jump/jump.bin`
 
-### Without JIT
+### Use the JIT compiler
 
-The JIT-Compiler can be disabled with the following flags and the
-VM falls back to an emulating mode:
-`cargo run --release --features interpret -- ./test/jump/jump.bin`
+The JIT-Compiler can be enabled with the following flags:
+`cargo run --release --features jit -- ./test/jump/jump.bin`
+
+You need to make sure, that you are using a nightly version of the
+Rust compiler, if you want to use the JIT-compiler. For
+instructions, which version to use, see above.
 
 ## Material
 

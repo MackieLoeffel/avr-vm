@@ -1,8 +1,8 @@
 # inspiration from https://github.com/Nemo157/roaring-rs/blob/master/.travis.yml
 language: rust
 rust:
-  # - stable
-  # - beta
+  - stable
+  - beta
   - nightly-2017-02-13
 cache: cargo
 before_install:
@@ -17,9 +17,11 @@ install:
 script:
   - export PATH=$PATH:~/.cargo/bin
   # - cargo fmt -- --write-mode=diff
-  # - cargo build --features strict && cargo test --features strict
+  - cargo build --features strict && cargo test --features strict
   - cargo build --features "strict no_gui" && cargo test --features "strict no_gui"
-  # - cargo build --features "strict interpret" && cargo test --features "strict interpret"
-  # - bash -c 'if [[ "$TRAVIS_RUST_VERSION" == "nightly" ]]; then
-      # cargo clippy -- -D warnings;
-    # fi'
+  - bash -c 'if [[ "$TRAVIS_RUST_VERSION" == "nightly-2017-02-13" ]]; then
+       cargo build --features "strict jit" && cargo test --features "strict jit"
+    fi'
+  - bash -c 'if [[ "$TRAVIS_RUST_VERSION" == "nightly-2017-02-13" ]]; then
+       cargo build --features "strict no_gui jit" && cargo test --features "strict no_gui jit"
+    fi'

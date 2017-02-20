@@ -5,7 +5,6 @@ dependencies = [
  "dynasm 0.0.6 (git+https://github.com/CensoredUsername/dynasm-rs?branch=dev)",
  "dynasmrt 0.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "lazy_static 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "libc 0.2.20 (registry+https://github.com/rust-lang/crates.io-index)",
  "rand 0.3.15 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
