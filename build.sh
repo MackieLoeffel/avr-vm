@@ -1,14 +1,15 @@
 #!/usr/bin/env zsh
 
-PROGRAM="jump-time"
-PROGRAMDIR="jump"
+PROGRAM="boardtest"
+PROGRAMDIR=
 # set default value
 : ${PROGRAMDIR:=$PROGRAM}
 
 # cargo build --color=never && \
 # cargo build --color=never --features jit && \
-# cargo build --color=never --features no_gui && \
-# cargo build --color=never --features "no_gui jit" && \
-cargo test --color=never --features "jit" -- --nocapture && \
-    cargo run --color=never --release --features "no_gui jit" -- ./test/$PROGRAMDIR/$PROGRAM.bin
+# cargo build --color=never --no-default-features && \
+# cargo build --color=never --no-default-features --features "jit" && \
+# cargo test --color=never --features "jit" -- --nocapture && \
+# cargo run --color=never --release --no-default-features --features "jit" -- ./test/$PROGRAMDIR/$PROGRAM.bin
+cargo run --color=never --release --features "jit" -- ./test/$PROGRAMDIR/$PROGRAM.bin
 # cargo test -- --nocapture

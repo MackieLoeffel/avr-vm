@@ -8,10 +8,14 @@ rand = "0.3"
 lazy_static = "0.2"
 dynasm = { git = "https://github.com/CensoredUsername/dynasm-rs", branch = "dev", optional = true }
 dynasmrt = {version = "0.0.6", optional = true}
+gtk = { version = "0.1.1", optional = true }
+gdk-pixbuf = { version = "0.1.1", optional = true }
+cairo-rs = { version = "0.1.1", optional = true }
+gdk = { version = "0.5.1", optional = true }
 
 [features]
-default = []
-no_gui = []
-jit = ["dynasm", "dynasmrt"]
+default = [ "gui" ]
+gui = [ "gtk", "gdk-pixbuf", "cairo-rs", "gdk" ]
+jit = [ "dynasm", "dynasmrt" ]
 # only for ci
 strict = []

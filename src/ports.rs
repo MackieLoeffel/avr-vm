@@ -1,4 +1,4 @@
-use io::{IO, LOGIC_0, LOGIC_1, LOGIC_Z, LOGIC_H};
+use io::{IO, HIGH, LOW};
 use util::{bit, bits};
 
 const PORT_OFFSET: u16 = 0x30;
@@ -77,14 +77,11 @@ impl<'a> Port<'a> {
         }
 
         for i in (0..8).rev() {
-            let output =
-                if self.is_output(i) {
-                    if bit(self.port, i) == 1 { LOGIC_1 }
-                    else { LOGIC_0 }
-                } else {
-                    if bit(self.port, i) == 1 { LOGIC_H }
-                    else { LOGIC_Z }
-                };
+            if !self.is_output(i) {
+                continue;
+            }
+
+            let output = if bit(self.port, i) == 1 { HIGH } else { LOW };
             io.p[self.index as usize][i].set(output);
         }
     }

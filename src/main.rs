@@ -6,6 +6,14 @@
 #[cfg(feature = "jit")]
 extern crate dynasmrt;
 extern crate rand;
+#[cfg(feature = "gui")]
+extern crate gtk;
+#[cfg(feature = "gui")]
+extern crate gdk_pixbuf;
+#[cfg(feature = "gui")]
+extern crate cairo;
+#[cfg(feature = "gui")]
+extern crate gdk;
 
 use std::env::args;
 #[macro_use]
@@ -14,17 +22,16 @@ mod decoder;
 mod data;
 mod cpu;
 mod memory;
+#[cfg(feature = "gui")]
 mod gui;
 mod io;
+#[cfg(feature = "gui")]
 mod widgets;
 mod ports;
 mod interrupts;
 use std::ffi::OsString;
 use cpu::{Cpu};
 use memory::{Memory};
-use io::IO;
-use widgets::{Widget};
-use widgets::WidgetType::*;
 
 fn main() {
     if args().count() != 2 {
@@ -32,50 +39,52 @@ fn main() {
         return;
     }
 
-    #[cfg(feature = "no_gui")]
+    #[cfg(not(feature = "gui"))]
     {
         let mem = Memory::new(OsString::from(args().nth(1).expect("There must be an argument")), None);
         let mut cpu = Cpu::new(mem, true);
         while cpu.step() {}
-        // if statement to remove unused code warning for gui code
-        if 1 == 1 { return; }
     }
 
-    let io = IO::new();
-    gui::init();
-    let widgets = [
-        Widget::new("red0", Led(0xff, 0x00, 0x00, &io.vcc, &io.p[3][7])),
-        Widget::new("green0", Led(0x00, 0xff, 0x00, &io.vcc, &io.p[2][0])),
-        Widget::new("yellow0", Led(0xff, 0xff, 0x00, &io.vcc, &io.p[2][1])),
-        Widget::new("blue0", Led(0x00, 0x00, 0xff, &io.vcc, &io.p[2][6])),
-        Widget::new("red1", Led(0xff, 0x00, 0x00, &io.vcc, &io.p[2][7])),
-        Widget::new("green1", Led(0x00, 0xff, 0x00, &io.vcc, &io.p[0][7])),
-        Widget::new("yellow1", Led(0xff, 0xff, 0x00, &io.vcc, &io.p[0][6])),
-        Widget::new("blue1", Led(0x00, 0x00, 0xff, &io.vcc, &io.p[0][5])),
-        Widget::new("button0", Button(&io.p[3][3])),
-        Widget::new("button1", Button(&io.p[3][2])),
-        Widget::new("potentiometer", Poti(&io.gnd, &io.p[0][1], &io.vcc)),
-        Widget::new("light sensor", Poti(&io.gnd, &io.p[0][0], &io.vcc)),
-        Widget::new("dis2", Seg7(&io.p[1][1], &io.p[1][0], &io.p[3][1], &io.p[1][6], &io.vcc,
-                                 &io.p[1][5], &io.p[1][4], &io.p[3][1], &io.p[1][3], &io.p[1][2])),
-        Widget::new("dis1", Seg7(&io.p[1][1], &io.p[1][0], &io.p[3][0], &io.p[1][6], &io.vcc,
-                                 &io.p[1][5], &io.p[1][4], &io.p[3][0], &io.p[1][3], &io.p[1][2]))
-    ];
+    #[cfg(feature = "gui")]
+    {
+        use widgets::{Button, Led, Poti, Seg7};
+        use io::IO;
 
-    io.nreset.set_ext(io::LOGIC_0);
-    io.gnd.set_ext(io::LOGIC_0);
-    io.vcc.set_ext(io::LOGIC_1);
+        let io = IO::new();
+        let mut gui = gui::init();
+        let _ = Led::new(&mut gui, "red0", 0xff, 0x00, 0x00, io.vcc.clone(), io.p[3][7].clone());
+        let _ = Led::new(&mut gui, "green0", 0x00, 0xff, 0x00, io.vcc.clone(), io.p[2][0].clone());
+        let _ = Led::new(&mut gui, "yellow0", 0xff, 0xff, 0x00, io.vcc.clone(), io.p[2][1].clone());
+        let _ = Led::new(&mut gui, "blue0", 0x00, 0x00, 0xff, io.vcc.clone(), io.p[2][6].clone());
+        let _ = Led::new(&mut gui, "red1", 0xff, 0x00, 0x00, io.vcc.clone(), io.p[2][7].clone());
+        let _ = Led::new(&mut gui, "green1", 0x00, 0xff, 0x00, io.vcc.clone(), io.p[0][7].clone());
+        let _ = Led::new(&mut gui, "yellow1", 0xff, 0xff, 0x00, io.vcc.clone(), io.p[0][6].clone());
+        let _ = Led::new(&mut gui, "blue1", 0x00, 0x00, 0xff, io.vcc.clone(), io.p[0][5].clone());
+        let _ = Button::new(&mut gui, "button0", io.p[3][3].clone());
+        let _ = Button::new(&mut gui, "button1", io.p[3][2].clone());
+        let _ = Poti::new(&mut gui, "potentiometer", io.gnd.clone(), io.p[0][1].clone(), io.vcc.clone());
+        let _ = Poti::new(&mut gui, "light sensor", io.gnd.clone(), io.p[0][0].clone(), io.vcc.clone());
+        let mut dis2 = Seg7::new(&mut gui, "dis2", io.p[1][1].clone(), io.p[1][0].clone(), io.p[3][1].clone(),
+                         io.p[1][6].clone(), io.vcc.clone(), io.p[1][5].clone(), io.p[1][4].clone(),
+                         io.p[3][1].clone(), io.p[1][3].clone(), io.p[1][2].clone());
+        let mut dis1 = Seg7::new(&mut gui, "dis1", io.p[1][1].clone(), io.p[1][0].clone(), io.p[3][0].clone(),
+                             io.p[1][6].clone(), io.vcc.clone(), io.p[1][5].clone(), io.p[1][4].clone(),
+                             io.p[3][0].clone(), io.p[1][3].clone(), io.p[1][2].clone());
 
-    let mem = Memory::new(OsString::from(args().nth(1).expect("There must be an argument")), Some(&io));
-    let mut cpu = Cpu::new(mem, false);
+        io.nreset.set(io::LOW);
+        io.gnd.set(io::LOW);
+        io.vcc.set(io::HIGH);
 
-    while gui::step() {
-        for _ in 0..100 {
-            cpu.step();
-        }
-        for widget in widgets.iter() {
-            widget.step();
+        let mem = Memory::new(OsString::from(args().nth(1).expect("There must be an argument")), Some(&io));
+        let mut cpu = Cpu::new(mem, false);
+
+        while gui.step() {
+            for _ in 0..100 {
+                cpu.step();
+            }
+            dis1.step();
+            dis2.step();
         }
     }
-    return;
 }
