@@ -21,7 +21,7 @@ these peripherals. The wiring is roughly the one here (JTAG, ISP and
 USB is missing): [Wiring](https://www4.cs.fau.de/Lehre/SS16/V_SPIC/Uebungen/Board/spicboard2_sch.pdf). It can be changed by tweaking `main.rs`.
 
 An example, how the GUI looks with the `boardtest` program running:
-![img](//mackieloeffel.github.io/boardtest.gif)
+![boardtest](https://mackieloeffel.github.io/boardtest.gif)
 
 All characters, which are written to `UDR` by the microcontroller,
 are displayed in the console.
