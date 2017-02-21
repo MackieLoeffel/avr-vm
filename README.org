@@ -2,22 +2,6 @@
 #+AUTHOR:
 #+TITLE:VM
 
-* TODO before opensource                                           :noexport:
-** TODO Readme
-*** DONE übersetzen
-*** TODO anpassen
-** DONE travis einrichten
-** TODO C-Code rauswerfen
-*** TODO gui nachbauen
-*** TODO nogui ohne deps
-*** TODO sig_std_logic ersetzen
-    sollte mit RefCells gehen
-** DONE aufräumen
-*** DONE doppelten Code in cpu.rs entfernen mit inline_always
-    nicht gemacht, damit code von interpreter und jit nicht gekoppelt ist
-    evtl. machen, wenn gebraucht
-*** DONE dynasm nur verwenden, wenn mit jit kompiliert wird?
-
 * AVR-VM
 
   This is a VM for the AVR ATmega32 microcontroller written in Rust.
@@ -34,6 +18,17 @@
   work with these programs. Only the instructions of these programs
   are currently implemented (which are quite a few, but not all).
 
+  It includes a GUI with some LEDs, buttons, two potentiometers and two
+  seven segment digits. There are diffent testprograms, which use
+  these peripherals. The wiring is roughly the one here (JTAG, ISP and
+  USB is missing): [[https://www4.cs.fau.de/Lehre/SS16/V_SPIC/Uebungen/Board/spicboard2_sch.pdf][Wiring]]. It can be changed by tweaking ~main.rs~.
+
+  An example, how the GUI looks with the ~boardtest~ program running:
+  [[http://mackieloeffel.github.io/boardtest.gif]]
+
+  All characters, which are written to ~UDR~ by the microcontroller,
+  are displayed in the console.
+
 ** Installation
    For using this VM you need to do the following steps:
 
@@ -44,7 +39,7 @@
 
    3. *ONLY FOR JIT-COMPILATION:*
       This project uses [[https://github.com/CensoredUsername/dynasm-rs][Dynasm-rs]] for the JIT-compiler, which is a
-      compiler plugin and needs the nightly Rust compiler. A working
+      compiler plugin and needs a nightly version of the Rust compiler. A working
       version can be installed using [[https://rustup.rs/][Rustup]]:
       ~rustup override set nightly-2017-02-13~
       Furthermore the JIT-Compiler needs to be enabled using the feature "jit",
@@ -53,17 +48,14 @@
    4. For running the tests and compiling C-Code and assembler to AVR
       bytecode, ~gcc-avr~ is needed. It can be installed either from
       [[http://www.atmel.com/tools/ATMELAVRTOOLCHAINFORLINUX.aspx]]
-      or on Ubuntu/Debian/BashOnWindows using
-      ~sudo apt-get install gcc-avr~
+      or on Ubuntu / Debian / BashOnWindows using
+      ~sudo apt-get install gcc-avr binutils-avr avr-libc~
       If you are using a different distribution, you can probably find
-      an equivalent package there.
+      an equivalent packages there.
 
 ** Usage
    You can execute the VM using the following command:
    ~cargo run --release -- ./test/boardtest/boardtest.bin~
-
-   All bytes, which are written to ~UDR~ by the microcontroller, are
-   displayed in the console.
 
    You can exucute a different binary by changing ~./test/boardtest/boardtest.bin~.
 *** Without GUI

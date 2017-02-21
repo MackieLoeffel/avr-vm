@@ -15,6 +15,17 @@ Some test programs can be found in `./test`. The VM is only tested to
 work with these programs. Only the instructions of these programs
 are currently implemented (which are quite a few, but not all).
 
+It includes a GUI with some LEDs, buttons, two potentiometers and two
+seven segment digits. There are diffent testprograms, which use
+these peripherals. The wiring is roughly the one here (JTAG, ISP and
+USB is missing): [Wiring](https://www4.cs.fau.de/Lehre/SS16/V_SPIC/Uebungen/Board/spicboard2_sch.pdf). It can be changed by tweaking `main.rs`.
+
+An example, how the GUI looks with the `boardtest` program running:
+![img](//mackieloeffel.github.io/boardtest.gif)
+
+All characters, which are written to `UDR` by the microcontroller,
+are displayed in the console.
+
 ## Installation
 
 For using this VM you need to do the following steps:
@@ -26,7 +37,7 @@ For using this VM you need to do the following steps:
 
 3.  **ONLY FOR JIT-COMPILATION:**
     This project uses [Dynasm-rs](https://github.com/CensoredUsername/dynasm-rs) for the JIT-compiler, which is a
-    compiler plugin and needs the nightly Rust compiler. A working
+    compiler plugin and needs a nightly version of the Rust compiler. A working
     version can be installed using [Rustup](https://rustup.rs/):
     `rustup override set nightly-2017-02-13`
     Furthermore the JIT-Compiler needs to be enabled using the feature "jit",
@@ -35,18 +46,15 @@ For using this VM you need to do the following steps:
 4.  For running the tests and compiling C-Code and assembler to AVR
     bytecode, `gcc-avr` is needed. It can be installed either from
     <http://www.atmel.com/tools/ATMELAVRTOOLCHAINFORLINUX.aspx>
-    or on Ubuntu/Debian/BashOnWindows using
-    `sudo apt-get install gcc-avr`
+    or on Ubuntu / Debian / BashOnWindows using
+    `sudo apt-get install gcc-avr binutils-avr avr-libc`
     If you are using a different distribution, you can probably find
-    an equivalent package there.
+    an equivalent packages there.
 
 ## Usage
 
 You can execute the VM using the following command:
 `cargo run --release -- ./test/boardtest/boardtest.bin`
-
-All bytes, which are written to `UDR` by the microcontroller, are
-displayed in the console.
 
 You can exucute a different binary by changing `./test/boardtest/boardtest.bin`.
 
