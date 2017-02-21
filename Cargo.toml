@@ -3,6 +3,17 @@ name = "avr-vm"
 version = "0.1.0"
 authors = ["Mackie Loeffel <mackie.loeffel@web.de>"]
 
+description = "VM with JIT-compiler for ATMega32"
+repository = "https://github.com/MackieLoeffel/avr-vm"
+homepage = "https://github.com/MackieLoeffel/avr-vm"
+readme = "README.md"
+keywords = ["avr", "vm", "jit"]
+categories = ["embedded", "emulators"]
+license = "MIT"
+
+[badges]
+travis-ci = { repository = "MackieLoeffel/avr-vm", branch = "master" }
+
 [dependencies]
 rand = "0.3"
 lazy_static = "0.2"
