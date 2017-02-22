@@ -3,7 +3,7 @@ name = "avr-vm"
 version = "0.1.0"
 dependencies = [
  "cairo-rs 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "dynasm 0.0.6 (git+https://github.com/CensoredUsername/dynasm-rs?branch=dev)",
+ "dynasm 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "dynasmrt 0.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "gdk 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "gdk-pixbuf 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -66,8 +66,8 @@ dependencies = [
 
 [[package]]
 name = "dynasm"
-version = "0.0.6"
-source = "git+https://github.com/CensoredUsername/dynasm-rs?branch=dev#c118ba83c8c4c2afcad2f5cdfd11015f42ec28fc"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "bitflags 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "lazy_static 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -332,7 +332,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum c_vec 1.0.12 (registry+https://github.com/rust-lang/crates.io-index)" = "aa9e1d9f7d49e289f36f19effbf3d5a5e30163ecf9c7a3c9be94d5374dec5b9a"
 "checksum cairo-rs 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)" = "5b3e2dae876fba33394353e985bff24e011a18250cf0021d07b86900b77388b0"
 "checksum cairo-sys-rs 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)" = "e377d5ccba12485dbdd1d459d711b948bbbed867f5808b25e0e2f6c8a45935f6"
-"checksum dynasm 0.0.6 (git+https://github.com/CensoredUsername/dynasm-rs?branch=dev)" = "<none>"
+"checksum dynasm 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = "2797f947dbc5288c3763fab5af98e6a32c8b0b299d93ad7a8543c65624dfef8f"
 "checksum dynasmrt 0.0.6 (registry+https://github.com/rust-lang/crates.io-index)" = "4465c04b0c02938ba3148a0e7f4817ac0d4bc72b0df1a8b9e1e5e2f258f3ef62"
 "checksum fs2 0.2.5 (registry+https://github.com/rust-lang/crates.io-index)" = "bcd414e5a1a979b931bb92f41b7a54106d3f6d2e6c253e9ce943b7cd468251ef"
 "checksum gdk 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)" = "151196bd3a35bc157b7dca6ee98bb701dca59439dedd19d8a85b2d8759e0afaf"

@@ -17,7 +17,7 @@ travis-ci = { repository = "MackieLoeffel/avr-vm", branch = "master" }
 [dependencies]
 rand = "0.3"
 lazy_static = "0.2"
-dynasm = { git = "https://github.com/CensoredUsername/dynasm-rs", branch = "dev", optional = true }
+dynasm = { version = "0.1.0", optional = true }
 dynasmrt = {version = "0.0.6", optional = true}
 gtk = { version = "0.1.1", optional = true }
 gdk-pixbuf = { version = "0.1.1", optional = true }
