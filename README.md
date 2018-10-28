@@ -39,7 +39,7 @@ For using this VM you need to do the following steps:
     This project uses [Dynasm-rs](https://github.com/CensoredUsername/dynasm-rs) for the JIT-compiler, which is a
     compiler plugin and needs a nightly version of the Rust compiler. A working
     version can be installed using [Rustup](https://rustup.rs/):
-    `rustup override set nightly-2017-02-13`
+    `rustup override set nightly-2018-10-09`
     Furthermore the JIT-Compiler needs to be enabled using the feature "jit",
     see below.
 
