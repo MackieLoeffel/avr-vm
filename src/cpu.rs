@@ -165,7 +165,7 @@ impl<'a> Cpu<'a> {
             };
         );
 
-        let mut ops = dynasmrt::Assembler::new();
+        let mut ops = dynasmrt::x64::Assembler::new().expect("new Assembler");
 
         let offset = ops.offset();
         dynasm!(ops
