@@ -1,5 +1,4 @@
 #![cfg_attr(feature = "jit", feature(plugin))]
-#![cfg_attr(feature = "jit", feature(abi_sysv64))]
 #![cfg_attr(feature = "jit", plugin(dynasm))]
 #![cfg_attr(feature = "strict", deny(warnings))]
 

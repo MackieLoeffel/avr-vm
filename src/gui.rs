@@ -1,6 +1,6 @@
 use gtk;
 use gtk::prelude::*;
-use gtk::{Window, WindowType, Orientation, Widget, Frame};
+use gtk::{Window, WindowType, Orientation, Widget, WidgetExt, Frame};
 
 pub struct Gui {
     hbox: gtk::Box,
@@ -34,7 +34,7 @@ impl Gui {
         unsafe { RUNNING }
     }
 
-    pub fn add<T: IsA<Widget> + IsA<gtk::Object>>(&mut self, name: &str, w: &T) {
+    pub fn add<T: IsA<Widget> + WidgetExt + IsA<gtk::Object>>(&mut self, name: &str, w: &T) {
         let frame = Frame::new(Some(name));
         frame.add(w);
         w.show();

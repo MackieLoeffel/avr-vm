@@ -3,7 +3,7 @@ language: rust
 rust:
   - stable
   - beta
-  - nightly-2017-02-13
+  - nightly-2018-10-27
 cache: cargo
 addons:
   apt:
@@ -22,9 +22,9 @@ script:
   # - cargo fmt -- --write-mode=diff
   - cargo build --features strict && cargo test --features strict
   - cargo build --no-default-features --features strict && cargo test --no-default-features --features strict
-  - bash -c 'if [[ "$TRAVIS_RUST_VERSION" == "nightly-2017-02-13" ]]; then
+  - bash -c 'if [[ "$TRAVIS_RUST_VERSION" == "nightly-2018-10-27" ]]; then
        cargo build --features "strict jit" && cargo test --features "strict jit";
     fi'
-  - bash -c 'if [[ "$TRAVIS_RUST_VERSION" == "nightly-2017-02-13" ]]; then
+  - bash -c 'if [[ "$TRAVIS_RUST_VERSION" == "nightly-2018-10-27" ]]; then
        cargo build --no-default-features --features "strict jit" && cargo test --no-default-features --features "strict jit";
     fi'

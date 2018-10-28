@@ -209,7 +209,7 @@ impl<T: Iterator<Item=u8>> Iterator for DecodedIterator<T> {
                             // which should be added during the
                             // command according to the spec
                             + 1;
-                        BRBC_S((if bits(b, 10, 1) == 0 {Set} else {Clear}), bits(b,0,3), k)
+                        BRBC_S(if bits(b, 10, 1) == 0 {Set} else {Clear}, bits(b,0,3), k)
                     }
                     0b1 =>
                         match bits(b, 3, 1) {

@@ -1,6 +1,7 @@
 use gtk;
 use gtk::prelude::*;
 use gdk;
+use gdk::WindowExt;
 use cairo::Context;
 use std::cell::RefCell;
 use std::rc::Rc;

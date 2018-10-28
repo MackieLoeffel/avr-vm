@@ -17,12 +17,12 @@ travis-ci = { repository = "MackieLoeffel/avr-vm", branch = "master" }
 [dependencies]
 rand = "0.3"
 lazy_static = "0.2"
-dynasm = { version = "0.1.0", optional = true }
-dynasmrt = {version = "0.0.6", optional = true}
-gtk = { version = "0.1.1", optional = true }
-gdk-pixbuf = { version = "0.1.1", optional = true }
-cairo-rs = { version = "0.1.1", optional = true }
-gdk = { version = "0.5.1", optional = true }
+dynasm = { version = "0.2.3", optional = true }
+dynasmrt = { version = "0.2.3", optional = true }
+gtk = { version = "0.5.0", optional = true }
+gdk-pixbuf = { version = "0.5.0", optional = true }
+cairo-rs = { version = "0.5.0", optional = true }
+gdk = { version = "0.9.0", optional = true }
 
 [features]
 default = [ "gui" ]
