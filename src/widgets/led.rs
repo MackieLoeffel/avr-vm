@@ -1,13 +1,10 @@
 use gtk;
 use gtk::prelude::*;
-use gdk_pixbuf::Pixbuf;
+use gdk_pixbuf::{Colorspace, Pixbuf, PixbufExt};
 use gui::Gui;
 use io::Wire;
 use std::rc::Rc;
 use std::cell::RefCell;
-
-// 0 is Colorspace RBG, see http://gtk-rs.org/docs/gdk_pixbuf_sys/constant.GDK_COLORSPACE_RGB.html
-const GDK_COLORSPACE_RGB: i32 = 0;
 
 struct LedState {
     image: gtk::Image,
@@ -23,10 +20,10 @@ impl Led {
     pub fn new(gui: &mut Gui, name: &str, r: u8, g: u8, b: u8, porta: Rc<Wire>, portb: Rc<Wire>) -> Led {
         assert!((r as u32) + (g as u32) + (b as u32) >= 0xff);
 
-        let mut icon = unsafe {[
-            Pixbuf::new(GDK_COLORSPACE_RGB, true, 8, 16, 16).unwrap(),
-            Pixbuf::new(GDK_COLORSPACE_RGB, true, 8, 16, 16).unwrap(),
-        ]};
+        let mut icon = [
+            Pixbuf::new(Colorspace::Rgb, true, 8, 16, 16),
+            Pixbuf::new(Colorspace::Rgb, true, 8, 16, 16),
+        ];
         draw_led(&mut icon[0], 0, 0, 0);
         draw_led(&mut icon[1], r, g, b);
 
@@ -61,7 +58,7 @@ impl LedState {
 
 fn draw_led(icon: &mut Pixbuf, r: u8, g: u8, b: u8) {
     assert_eq!(icon.get_n_channels(), 4);
-    assert_eq!(icon.get_colorspace(), GDK_COLORSPACE_RGB);
+    assert_eq!(icon.get_colorspace(), Colorspace::Rgb);
     assert_eq!(icon.get_bits_per_sample(), 8);
     assert_eq!(icon.get_has_alpha(), true);
 
